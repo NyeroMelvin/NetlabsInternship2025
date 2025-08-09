@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DHT11 Calibrator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --primary: #2196F3;
+      --success: #4caf50;
+      --danger: #f44336;
+      --bg: #f0f2f5;
+      --card: #ffffff;
+      --text: #333333;
+      --border: #cccccc;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      margin: 0;
+      padding: 0;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: var(--card);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 420px;
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--primary);
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: 600;
+    }
+
+    input[type='number'] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 16px;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      background-color: var(--primary);
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #1976d2;
+    }
+
+    h3 {
+      margin-top: 25px;
+      color: var(--success);
+    }
+
+    #output {
+      background: #e8f4fd;
+      border-left: 4px solid var(--primary);
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 10px;
+      font-size: 15px;
+      white-space: pre-line;
+    }
+
+    .warning {
+      color: var(--danger);
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>MANUAL DHT11 CALIBRATOR</h2>
+
+    <label for="tempInput">Raw Temperature (°C):</label>
+    <input type="number" id="tempInput" step="0.01" />
+
+    <label for="humInput">Raw Humidity (%):</label>
+    <input type="number" id="humInput" step="0.01" />
+
+    <button onclick="calibrate()">Calibrate</button>
+
+    <h3>Results:</h3>
+    <p id="output">--</p>
+  </div>
+
+  <script>
+    function calibrate() {
+      const rawTemp = parseFloat(document.getElementById('tempInput').value);
+      const rawHum = parseFloat(document.getElementById('humInput').value);
+      const output = document.getElementById('output');
+
+      if (isNaN(rawTemp) || isNaN(rawHum)) {
+        output.innerHTML = "<span class='warning'>⚠️ Please enter valid numbers.</span>";
+        return;
+      }
+
+      if (rawTemp < -10) {
+        output.innerHTML =
+          "❄️ <span class='warning'>Temperature too low to operate (-10°C min).</span>";
+        return;
+      }
+
+      if (rawTemp > 70) {
+        output.innerHTML =
+          "🔥 <span class='warning'>Temperature too high to operate (70°C max).</span>";
+        return;
+      }
+
+      if (rawHum < 30) {
+        output.innerHTML =
+          "⚠️ <span class='warning'>Humidity too low to operate (minimum 30%).</span>";
+        return;
+      }
+
+      if (rawHum > 100) {
+        output.innerHTML =
+          "⚠️ <span class='warning'>Humidity too high to operate (100% max).</span>";
+        return;
+      }
+
+      const calibratedTemp = 0.97499 * rawTemp + 0.85246;
+      const calibratedHum = 1.05403 * rawHum - 3.65002;
+
+      const result =
+        `Calibrated Temperature: ${calibratedTemp.toFixed(2)} °C\n` +
+        `Calibrated Humidity: ${calibratedHum.toFixed(2)} %`;
+
+      output.innerText = result;
+    }
+  </script>
+</body>
+</html>
